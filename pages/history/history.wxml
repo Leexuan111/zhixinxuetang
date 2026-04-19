@@ -1,0 +1,66 @@
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="page-container">
+
+    <view class="empty-area" wx:if="{{isEmpty}}">
+      <text class="empty-icon">📒</text>
+      <text class="empty-text">暂无错题记录</text>
+      <text class="empty-hint">去首页拍照上传错题吧</text>
+    </view>
+
+    <view class="list-header" wx:if="{{!isEmpty}}">
+      <text class="list-count">共 {{historyList.length}} 条记录</text>
+      <text class="clear-btn" bindtap="clearAll">清空全部</text>
+    </view>
+
+    <view class="history-list" wx:if="{{!isEmpty}}">
+      <view class="history-card" wx:for="{{historyList}}" wx:key="id">
+        <view class="card-header" bindtap="toggleExpand" data-id="{{item.id}}">
+          <view class="card-header-left">
+            <text class="card-subject" wx:if="{{item.subject}}">{{item.subject}}</text>
+            <text class="card-time">{{item.createTime}}</text>
+          </view>
+          <view class="card-header-right">
+            <text class="delete-btn" catchtap="deleteItem" data-id="{{item.id}}">🗑️</text>
+            <text class="expand-arrow {{expandedId === item.id ? 'arrow-up' : 'arrow-down'}}">▼</text>
+          </view>
+        </view>
+
+        <view class="card-preview">
+          <text class="preview-text">{{item.original_question}}</text>
+        </view>
+
+        <view class="card-detail" wx:if="{{expandedId === item.id}}">
+          <view class="detail-section" wx:if="{{item.error_analysis}}">
+            <view class="detail-title">🔍 错因分析</view>
+            <text class="detail-text">{{item.error_analysis}}</text>
+          </view>
+
+          <view class="detail-section" wx:if="{{item.knowledge_points.length > 0}}">
+            <view class="detail-title">📌 知识点</view>
+            <view class="tag-row">
+              <text class="tag kp-tag" wx:for="{{item.knowledge_points}}" wx:for-item="kp" wx:key="index">{{kp}}</text>
+            </view>
+          </view>
+
+          <view class="detail-section">
+            <view class="detail-title">💡 举一反三</view>
+            <view class="similar-question" wx:for="{{item.similar_questions}}" wx:for-item="sq" wx:key="index">
+              <view class="sq-header">练习题 {{index + 1}}</view>
+              <text class="sq-content">{{sq.question}}</text>
+              <view class="answer-section">
+                <view class="answer-toggle" bindtap="toggleAnswer" data-id="{{item.id}}" data-index="{{index}}">
+                  <text>{{expandedAnswers[item.id + '_' + index] ? '收起答案' : '查看答案'}}</text>
+                  <text class="arrow {{expandedAnswers[item.id + '_' + index] ? 'arrow-up' : 'arrow-down'}}">▼</text>
+                </view>
+                <view class="answer-content" wx:if="{{expandedAnswers[item.id + '_' + index]}}">
+                  <text>{{sq.answer}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>

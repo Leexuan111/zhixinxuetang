@@ -1,0 +1,151 @@
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="page-container">
+
+    <view class="config-card">
+      <view class="card-title">
+        <text class="card-title-icon">🔑</text>
+        <text class="card-title-text">API 配置</text>
+      </view>
+
+      <view class="mode-section">
+        <text class="mode-label">选择接口模式</text>
+        <view class="mode-tabs">
+          <view class="mode-tab {{apiMode === 'default' ? 'mode-tab-active' : ''}}" bindtap="switchMode" data-mode="default">
+            <text class="mode-tab-icon">🚀</text>
+            <text class="mode-tab-text">默认模式</text>
+            <text class="mode-tab-desc">开箱即用</text>
+          </view>
+          <view class="mode-tab {{apiMode === 'custom' ? 'mode-tab-active' : ''}}" bindtap="switchMode" data-mode="custom">
+            <text class="mode-tab-icon">⚙️</text>
+            <text class="mode-tab-text">自定义模式</text>
+            <text class="mode-tab-desc">自行配置</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="config-status">
+        <view class="status-dot {{hasKey ? 'status-ok' : 'status-no'}}"></view>
+        <text class="status-text">{{hasKey ? '已配置' : '未配置'}}</text>
+      </view>
+
+      <view wx:if="{{apiMode === 'default'}}">
+        <view class="default-mode-info">
+          <text class="default-info-icon">✨</text>
+          <text class="default-info-text">使用内置接口，无需配置即可直接使用拍照识题功能</text>
+        </view>
+      </view>
+
+      <view wx:if="{{apiMode === 'custom'}}">
+        <view class="input-group">
+          <view class="input-label-row">
+            <text class="input-label">API URL</text>
+            <text class="reset-btn" bindtap="resetUrl">恢复默认</text>
+          </view>
+          <view class="input-wrapper">
+            <input
+              class="url-input"
+              placeholder="请输入 API 地址"
+              value="{{apiUrl}}"
+              bindinput="onUrlInput"
+            />
+          </view>
+          <text class="input-hint">默认为智谱官方地址，可改为代理或转发地址</text>
+        </view>
+
+        <view class="input-group">
+          <text class="input-label">API Key</text>
+          <view class="input-wrapper">
+            <input
+              class="key-input"
+              placeholder="{{showKey ? '请输入 API Key' : keyPlaceholder}}"
+              value="{{showKey ? apiKey : ''}}"
+              bindinput="onKeyInput"
+              password="{{!showKey}}"
+            />
+            <text class="eye-btn" bindtap="toggleShowKey">{{showKey ? '🙈' : '👁️'}}</text>
+          </view>
+        </view>
+
+        <view class="input-group">
+          <text class="input-label">模型名称</text>
+          <view class="input-wrapper">
+            <input
+              class="key-input"
+              placeholder="如 glm-4.6v-flash、qwen3.5-plus"
+              value="{{modelName}}"
+              bindinput="onModelInput"
+            />
+          </view>
+          <text class="input-hint">需要支持图片理解的视觉模型</text>
+        </view>
+
+        <view class="btn-group">
+          <view class="btn-save" bindtap="saveConfig">保存配置</view>
+          <view class="btn-clear" bindtap="clearConfig" wx:if="{{hasKey}}">清除配置</view>
+        </view>
+      </view>
+
+      <view class="test-section">
+        <view class="btn-test {{testing ? 'btn-disabled' : ''}}" bindtap="testConnection">
+          <text wx:if="{{!testing}}">🧪 测试连接</text>
+          <text wx:else>测试中...</text>
+        </view>
+        <view class="test-result" wx:if="{{testResult}}">
+          <view class="result-box {{testResult.success ? 'result-ok' : 'result-fail'}}">
+            <text class="result-icon">{{testResult.success ? '✅' : '❌'}}</text>
+            <text class="result-msg">{{testResult.message}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="help-card">
+      <view class="card-title">
+        <text class="card-title-icon">📖</text>
+        <text class="card-title-text">使用指南</text>
+      </view>
+
+      <view class="help-steps">
+        <view class="step">
+          <view class="step-number">1</view>
+          <view class="step-content">
+            <text class="step-title">快速开始</text>
+            <text class="step-desc">选择「默认模式」即可直接使用，无需任何配置</text>
+          </view>
+        </view>
+
+        <view class="step">
+          <view class="step-number">2</view>
+          <view class="step-content">
+            <text class="step-title">自定义配置（可选）</text>
+            <text class="step-desc">切换到「自定义模式」，填入自己的 API URL 和 API Key</text>
+          </view>
+        </view>
+
+        <view class="step">
+          <view class="step-number">3</view>
+          <view class="step-content">
+            <text class="step-title">拍照识题</text>
+            <text class="step-desc">回到首页，拍照或选择错题图片，AI自动分析</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="help-link" bindtap="copyLink">
+        <text class="link-text">📎 点击复制智谱开放平台 API Key 获取地址</text>
+      </view>
+    </view>
+
+    <view class="about-card">
+      <view class="card-title">
+        <text class="card-title-icon">📚</text>
+        <text class="card-title-text">关于知错学堂</text>
+      </view>
+      <view class="about-content">
+        <text class="about-text">知错学堂是一款基于AI的错题学习工具。通过拍照识别错题，利用大模型分析错因，并生成举一反三的练习题，帮助学生高效学习。</text>
+        <text class="about-tech">技术支持：阿里百炼 Coding Plan / 智谱 GLM 多模态大模型</text>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>

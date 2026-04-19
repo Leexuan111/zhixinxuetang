@@ -1,0 +1,92 @@
+<scroll-view class="scrollarea" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="page-container">
+
+    <view class="header-section">
+      <view class="app-icon">📚</view>
+      <text class="app-title">知错学堂</text>
+      <text class="app-subtitle">拍照识错题 · 举一反三</text>
+    </view>
+
+    <view class="action-area" wx:if="{{!imagePath}}">
+      <view class="upload-btn" bindtap="chooseImage">
+        <view class="upload-icon">📷</view>
+        <text class="upload-text">拍照 / 选择图片</text>
+        <text class="upload-hint">拍摄或选择一道错题，AI帮你分析并生成练习题</text>
+      </view>
+    </view>
+
+    <view class="image-area" wx:if="{{imagePath}}">
+      <view class="image-card">
+        <image class="preview-img" src="{{imagePath}}" mode="aspectFit" bindtap="previewImage"></image>
+        <view class="image-actions" wx:if="{{!analyzing && !showResult}}">
+          <view class="btn-rechoose" bindtap="chooseImage">重新选择</view>
+          <view class="btn-reanalyze" bindtap="reAnalyze">重新分析</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="loading-area" wx:if="{{analyzing}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">AI 正在分析错题...</text>
+      <text class="loading-hint">正在识别题目并生成举一反三练习题</text>
+    </view>
+
+    <view class="result-area" wx:if="{{showResult && result}}">
+      <view class="section-card">
+        <view class="section-header">
+          <text class="section-icon">📝</text>
+          <text class="section-title">识别的题目</text>
+        </view>
+        <view class="section-body">
+          <text class="question-text">{{result.original_question}}</text>
+        </view>
+        <view class="tag-row" wx:if="{{result.subject || result.knowledge_points.length > 0}}">
+          <text class="tag subject-tag" wx:if="{{result.subject}}">{{result.subject}}</text>
+          <text class="tag kp-tag" wx:for="{{result.knowledge_points}}" wx:key="index">{{item}}</text>
+        </view>
+      </view>
+
+      <view class="section-card" wx:if="{{result.error_analysis}}">
+        <view class="section-header">
+          <text class="section-icon">🔍</text>
+          <text class="section-title">错因分析</text>
+        </view>
+        <view class="section-body">
+          <text class="analysis-text">{{result.error_analysis}}</text>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-header">
+          <text class="section-icon">💡</text>
+          <text class="section-title">举一反三 · 练习题</text>
+        </view>
+        <view class="section-body">
+          <view class="question-card" wx:for="{{result.similar_questions}}" wx:key="index">
+            <view class="question-header">
+              <text class="question-number">练习题 {{index + 1}}</text>
+            </view>
+            <view class="question-content">
+              <text>{{item.question}}</text>
+            </view>
+            <view class="answer-section">
+              <view class="answer-toggle" bindtap="toggleAnswer" data-index="{{index}}">
+                <text>{{expandedAnswers[index] ? '收起答案' : '查看答案'}}</text>
+                <text class="arrow {{expandedAnswers[index] ? 'arrow-up' : 'arrow-down'}}">▼</text>
+              </view>
+              <view class="answer-content" wx:if="{{expandedAnswers[index]}}">
+                <text>{{item.answer}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="bottom-actions">
+        <view class="btn-primary" bindtap="resetPage">📸 继续拍照</view>
+        <view class="btn-secondary" bindtap="reAnalyze">🔄 重新分析</view>
+      </view>
+    </view>
+
+  </view>
+</scroll-view>
